@@ -41,4 +41,11 @@ while True:
                 body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!"
                 cvpn_mail.send_mail(sender_email, password, subject, body)
                 # i = 1
+        else:
+                sender_email = credentials.email
+                password = credentials.password
+                subject = "WARNING TOO MANY VPN USERS!"
+                body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
+                body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!"
+                cvpn_mail.send_mail(sender_email, password, subject, body)
         time.sleep(30)
