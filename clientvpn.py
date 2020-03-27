@@ -72,7 +72,8 @@ def timed_nertwork():
 
 @app.route('/', methods=['GET'])
 def main():
-        return "Hola"
+        sched.start()
+        print("Adios")
 
 
 if __name__ == '__main__':
