@@ -23,8 +23,13 @@ dashboard = meraki.DashboardAPI(
         print_console=False)
 
 
+def ret():
+        return "Hola"
+
+
 @app.route('/', methods=['GET'])
 def main():
+        ret()
         # i = 0
         while True:
                 clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
