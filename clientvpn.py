@@ -60,7 +60,7 @@ def main():
                         body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
                         body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!" + dt_string
                         cvpn_mail.send_mail(sender_email, password, subject, body)
-                time.sleep(30)
+                time.sleep(5)
 
 
 if __name__ == '__main__':
