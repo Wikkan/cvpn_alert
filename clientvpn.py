@@ -22,14 +22,8 @@ dashboard = meraki.DashboardAPI(
         base_url=baseurl,
         print_console=False)
 
-
-def ret():
-        return "Hola"
-
-
 @app.route('/', methods=['GET'])
 def main():
-        ret()
         # i = 0
         while True:
                 clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
@@ -65,7 +59,9 @@ def main():
                         body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
                         body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!" + dt_string
                         cvpn_mail.send_mail(sender_email, password, subject, body)
+
                 time.sleep(5)
+                return "hola"
 
 
 if __name__ == '__main__':
