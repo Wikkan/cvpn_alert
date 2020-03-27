@@ -28,6 +28,7 @@ dashboard = meraki.DashboardAPI(
 
 @sched.scheduled_job('interval', seconds=10)
 def timed_job():
+        print("Hola")
         return "Hola"
 
 
@@ -72,6 +73,7 @@ def timed_nertwork():
 @app.route('/', methods=['GET'])
 def main():
         sched.start()
+        print("Adios")
 
 
 if __name__ == '__main__':
