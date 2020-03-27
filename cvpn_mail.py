@@ -26,6 +26,6 @@ def send_mail(sender_email, password, subject, body):
         server.sendmail(sender_email, receiver_email, text)
 
 
-if __name__ == "__main__":
-    # pruebacrg2020@gmail.com CRG3mpow3rs
-    send_mail('pruebacrg2020@gmail.com', 'CRG3mpow3rs', 'Prueba', 'Prueba')
+# if __name__ == "__main__":
+#     # pruebacrg2020@gmail.com CRG3mpow3rs
+#     send_mail('pruebacrg2020@gmail.com', 'CRG3mpow3rs', 'Prueba', 'Prueba')
