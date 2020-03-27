@@ -26,13 +26,7 @@ dashboard = meraki.DashboardAPI(
         print_console=False)
 
 
-@sched.scheduled_job('interval', seconds=10)
-def timed_job():
-        print("Hola")
-        return "Hola"
-
-
-@sched.scheduled_job('interval', seconds=30)
+@sched.scheduled_job('interval', seconds=20)
 def timed_nertwork():
         # i = 0
         clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
@@ -69,11 +63,13 @@ def timed_nertwork():
                 body = body + "\nREMEMBER TO START THE SCRIPT AGAIN! " + dt_string
                 cvpn_mail.send_mail(sender_email, password, subject, body)
 
+        return "Hola"
+
 
 @app.route('/', methods=['GET'])
 def main():
+        timed_nertwork()
         sched.start()
-        print("Adios")
 
 
 if __name__ == '__main__':
