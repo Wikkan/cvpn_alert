@@ -6,6 +6,7 @@ import cvpn_mail
 import datetime
 
 from flask import Flask
+from flask_apscheduler import APScheduler
 
 api_key = credentials.api_key
 baseurl = credentials.base_url
@@ -22,9 +23,12 @@ dashboard = meraki.DashboardAPI(
         base_url=baseurl,
         print_console=False)
 
+
 @app.route('/', methods=['GET'])
 def main():
         # i = 0
+        app.apscheduler.add_job(func=scheduled_task, trigger='cron', seconds=10)
+
         while True:
                 clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
                 cvpn_users = 0
@@ -57,11 +61,14 @@ def main():
                         password = credentials.password
                         subject = "WARNING TOO MANY VPN USERS!"
                         body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
-                        body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!" + dt_string
+                        body = body + "\nREMEMBER TO START THE SCRIPT AGAIN! " + dt_string
                         cvpn_mail.send_mail(sender_email, password, subject, body)
 
                 time.sleep(5)
-                return "hola"
+
+
+def scheduled_task():
+        return 'Hola'
 
 
 if __name__ == '__main__':
