@@ -1,2 +1,1 @@
-web: gunicorn clientvpn:app
-clock: python clientvpn.py
+web: gunicorn clientvpn:app --timeout 1500
