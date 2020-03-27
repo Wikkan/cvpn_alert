@@ -42,4 +42,3 @@ while True:
                 cvpn_mail.send_mail(sender_email, password, subject, body)
                 # i = 1
         time.sleep(30)
-
