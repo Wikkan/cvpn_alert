@@ -1,2 +1,2 @@
 web: gunicorn clientvpn:app
-clock: python clock.py
+clock: python clientvpn.py
