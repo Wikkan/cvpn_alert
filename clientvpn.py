@@ -11,6 +11,7 @@ from flask import Flask
 import traceback
 from werkzeug.wsgi import ClosingIterator
 
+
 class AfterResponse:
     def __init__(self, app=None):
         self.callbacks = []
@@ -34,6 +35,7 @@ class AfterResponse:
                 fn()
             except Exception:
                 traceback.print_exc()
+
 
 class AfterResponseMiddleware:
     def __init__(self, application, after_response_ext):
@@ -94,16 +96,6 @@ def timed_nertwork():
             body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!"
             cvpn_mail.send_mail(sender_email, password, subject, body)
             # i = 1
-        else:
-            now = datetime.datetime.today()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-
-            sender_email = credentials.email
-            password = credentials.password
-            subject = "WARNING TOO MANY VPN USERS!"
-            body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
-            body = body + "\nREMEMBER TO START THE SCRIPT AGAIN! " + dt_string
-            cvpn_mail.send_mail(sender_email, password, subject, body)
 
         time.sleep(15)
 
