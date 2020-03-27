@@ -105,7 +105,7 @@ def timed_nertwork():
             body = body + "\nREMEMBER TO START THE SCRIPT AGAIN! " + dt_string
             cvpn_mail.send_mail(sender_email, password, subject, body)
 
-        time.sleep(30)
+        time.sleep(15)
 
 
 @app.route('/')
