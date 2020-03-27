@@ -18,6 +18,7 @@ client_vpn_threshold = credentials.client_vpn_threshold
 app = Flask(__name__)  # create the Flask app
 
 sched = BlockingScheduler()
+sched.start()
 
 # Instantiate Meraki Python SDK Client
 dashboard = meraki.DashboardAPI(
@@ -68,10 +69,6 @@ def timed_job():
 @app.route('/', methods=['GET'])
 def main():
         return "Hola"
-
-
-def scheduled_task():
-        return 'Hola'
 
 
 if __name__ == '__main__':
