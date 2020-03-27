@@ -6,7 +6,7 @@ import cvpn_mail
 import datetime
 
 from flask import Flask
-from flask_apscheduler import APScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 api_key = credentials.api_key
 baseurl = credentials.base_url
@@ -17,6 +17,8 @@ client_vpn_threshold = credentials.client_vpn_threshold
 # initialization
 app = Flask(__name__)  # create the Flask app
 
+sched = BlockingScheduler()
+
 # Instantiate Meraki Python SDK Client
 dashboard = meraki.DashboardAPI(
         api_key=api_key,
@@ -24,22 +26,20 @@ dashboard = meraki.DashboardAPI(
         print_console=False)
 
 
-@app.route('/', methods=['GET'])
-def main():
+@sched.scheduled_job('interval', seconds=30)
+def timed_job():
         # i = 0
-        app.apscheduler.add_job(func=scheduled_task, trigger='cron', seconds=10)
-
         while True:
                 clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
                 cvpn_users = 0
                 for item in clientvpn:
-                        #Check if Client Device belongs to ClientVPN Subnet
+                        # Check if Client Device belongs to ClientVPN Subnet
                         l = re.split('(.*)\.(.*)\.(.*)\.(.*)', item['ip'])
                         network_add = l[1:-1]
-                        if network_add[0:3] == ['192','168','92'] or network_add[0:3] == ['192','168','93']:
+                        if network_add[0:3] == ['192', '168', '92'] or network_add[0:3] == ['192', '168', '93']:
                                 curr_stamp = datetime.datetime.utcnow().timestamp()
                                 dt = datetime.datetime.strptime(item['lastSeen'], '%Y-%m-%dT%H:%M:%SZ')
-                                client_stamp=dt.timestamp()
+                                client_stamp = dt.timestamp()
                                 # If Client VPN user has been seen in the last 10 minutes, count it
                                 if (curr_stamp - 600) <= client_stamp:
                                         cvpn_users = cvpn_users + 1
@@ -64,7 +64,10 @@ def main():
                         body = body + "\nREMEMBER TO START THE SCRIPT AGAIN! " + dt_string
                         cvpn_mail.send_mail(sender_email, password, subject, body)
 
-                time.sleep(5)
+
+@app.route('/', methods=['GET'])
+def main():
+        return "Hola"
 
 
 def scheduled_task():
