@@ -8,7 +8,7 @@ organization_id = '619807898716865308'
 network_id = 'N_619807898716884034'
 #Input your test sender gmail account credentials
 #Follow tutorial here to set up your GMail for Developers account https://realpython.com/python-send-email/#option-1-setting-up-a-gmail-account-for-development
-email = 'CRGalert2020@gmail.com'
+email = 'crgalert2020@gmail.com'
 password = 'CRG3mpow3rs'
 client_vpn_threshold = 350
 #Input your test receiver gmail account

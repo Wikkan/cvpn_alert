@@ -28,4 +28,4 @@ def send_mail(sender_email, password, subject, body):
 
 # if __name__ == "__main__":
 #     # pruebacrg2020@gmail.com CRG3mpow3rs
-#     send_mail('pruebacrg2020@gmail.com', 'CRG3mpow3rs', 'Prueba', 'Prueba')
+#     send_mail('crgalert2020@gmail.com', 'CRG3mpow3rs', 'Prueba', 'Prueba')
