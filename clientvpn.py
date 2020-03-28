@@ -6,7 +6,6 @@ import cvpn_mail
 import datetime
 
 from flask import Flask
-# from apscheduler.schedulers.blocking import BlockingScheduler
 
 import traceback
 from werkzeug.wsgi import ClosingIterator
@@ -50,6 +49,7 @@ class AfterResponseMiddleware:
             traceback.print_exc()
             return iterator
 
+
 api_key = credentials.api_key
 baseurl = credentials.base_url
 org_id = credentials.organization_id
@@ -60,32 +60,57 @@ client_vpn_threshold = credentials.client_vpn_threshold
 app = Flask("after_response")  # create the Flask app
 AfterResponse(app)
 
-# sched = BlockingScheduler()
-
 # Instantiate Meraki Python SDK Client
 dashboard = meraki.DashboardAPI(
-        api_key=api_key,
-        base_url=baseurl,
-        print_console=False)
+    api_key=api_key,
+    base_url=baseurl,
+    print_console=False)
+
+
+def get_all_network_clientes_online():
+    condition = False
+    list_clients = []
+    list_clients_online = []
+    user_id = ''
+
+    while not condition:
+        clients = dashboard.clients.getNetworkClients(networkId=network_id, total_pages=1, direction='next',
+                                                      perPage=1000, startingAfter=user_id)
+
+        if len(clients) != 1000:
+            condition = True
+
+        for c in clients:
+            list_clients.append(c)
+
+        user_id = list_clients[-1]['id']
+
+    for client in list_clients:
+        if client['status'] == 'Online':
+            list_clients_online.append(client)
+
+    return list_clients_online
 
 
 @app.after_response
-def timed_nertwork():
-    # i = 0
-    while True:
-        clientvpn = dashboard.clients.getNetworkClients(networkId=network_id)
+def main():
+    i = True
+
+    while i:
+        clientvpn = get_all_network_clientes_online()
         cvpn_users = 0
         for item in clientvpn:
             # Check if Client Device belongs to ClientVPN Subnet
             l = re.split('(.*)\.(.*)\.(.*)\.(.*)', item['ip'])
             network_add = l[1:-1]
             if network_add[0:3] == ['192', '168', '92'] or network_add[0:3] == ['192', '168', '93']:
-                curr_stamp = datetime.datetime.utcnow().timestamp()
-                dt = datetime.datetime.strptime(item['lastSeen'], '%Y-%m-%dT%H:%M:%SZ')
-                client_stamp = dt.timestamp()
-                # If Client VPN user has been seen in the last 10 minutes, count it
-                if (curr_stamp - 600) <= client_stamp:
-                    cvpn_users = cvpn_users + 1
+                # curr_stamp = datetime.datetime.utcnow().timestamp()
+                # dt = datetime.datetime.strptime(item['lastSeen'], '%Y-%m-%dT%H:%M:%SZ')
+                # client_stamp = dt.timestamp()
+                # # If Client VPN user has been seen in the last 10 minutes, count it
+                # if (curr_stamp - 600) <= client_stamp:
+                #     cvpn_users = cvpn_users + 1
+                cvpn_users += 1
         print(cvpn_users)
         # Set client threshold to desired amount in credentials file
         if cvpn_users >= client_vpn_threshold:
@@ -95,15 +120,15 @@ def timed_nertwork():
             body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
             body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!"
             cvpn_mail.send_mail(sender_email, password, subject, body)
-            # i = 1
+            i = False
 
-        time.sleep(15)
+        time.sleep(30)
 
 
 @app.route('/')
 def main():
-        return "Success!\n"
+    return "Success!\n"
 
 
 if __name__ == '__main__':
-        app.run(port=5000, debug=False)
+    app.run(port=5000, debug=False)
