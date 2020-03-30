@@ -114,7 +114,7 @@ def main():
 
             for x in range(3):
                 print('Waiting...')
-                time.sleep(60)
+                time.sleep(600)
 
         time.sleep(30)
 
