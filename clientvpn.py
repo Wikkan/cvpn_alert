@@ -67,7 +67,7 @@ dashboard = meraki.DashboardAPI(
     print_console=False)
 
 
-def get_all_network_clientes_online():
+def get_all_network_clients_online():
     condition = False
     list_clients = []
     list_clients_online = []
@@ -94,22 +94,14 @@ def get_all_network_clientes_online():
 
 @app.after_response
 def main():
-    i = True
-
-    while i:
-        clientvpn = get_all_network_clientes_online()
+    while True:
+        clientvpn = get_all_network_clients_online()
         cvpn_users = 0
         for item in clientvpn:
             # Check if Client Device belongs to ClientVPN Subnet
             l = re.split('(.*)\.(.*)\.(.*)\.(.*)', item['ip'])
             network_add = l[1:-1]
             if network_add[0:3] == ['192', '168', '92'] or network_add[0:3] == ['192', '168', '93']:
-                # curr_stamp = datetime.datetime.utcnow().timestamp()
-                # dt = datetime.datetime.strptime(item['lastSeen'], '%Y-%m-%dT%H:%M:%SZ')
-                # client_stamp = dt.timestamp()
-                # # If Client VPN user has been seen in the last 10 minutes, count it
-                # if (curr_stamp - 600) <= client_stamp:
-                #     cvpn_users = cvpn_users + 1
                 cvpn_users += 1
         print(cvpn_users)
         # Set client threshold to desired amount in credentials file
@@ -118,9 +110,8 @@ def main():
             password = credentials.password
             subject = "WARNING TOO MANY VPN USERS!"
             body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
-            body = body + "\nREMEMBER TO START THE SCRIPT AGAIN!"
             cvpn_mail.send_mail(sender_email, password, subject, body)
-            i = False
+            time.sleep(600)
 
         time.sleep(30)
 
