@@ -111,7 +111,7 @@ def main():
             subject = "WARNING TOO MANY VPN USERS!"
             body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
             cvpn_mail.send_mail(sender_email, password, subject, body)
-            time.sleep(600)
+            time.sleep(1800)
 
         time.sleep(30)
 

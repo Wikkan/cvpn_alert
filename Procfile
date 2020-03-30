@@ -1,1 +1,1 @@
-web: gunicorn clientvpn:app --timeout 604800
+web: gunicorn clientvpn:app --timeout 10800
