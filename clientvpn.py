@@ -3,7 +3,7 @@ import credentials
 import re
 import time
 import cvpn_mail
-import datetime
+from flask_apscheduler import APScheduler
 
 from flask import Flask
 
@@ -60,6 +60,10 @@ client_vpn_threshold = credentials.client_vpn_threshold
 app = Flask("after_response")  # create the Flask app
 AfterResponse(app)
 
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
+
 # Instantiate Meraki Python SDK Client
 dashboard = meraki.DashboardAPI(
     api_key=api_key,
@@ -67,7 +71,7 @@ dashboard = meraki.DashboardAPI(
     print_console=False)
 
 
-def get_all_network_clients_online():
+def get_count_network_clients_online():
     condition = False
     list_clients = []
     list_clients_online = []
@@ -86,24 +90,23 @@ def get_all_network_clients_online():
         user_id = list_clients[-1]['id']
 
     for client in list_clients:
-        if (client['ip'] is not None) and (client['status'] == 'Online'):
-            list_clients_online.append(client)
+        if client['ip'] is not None:
+            # Check if Client Device belongs to ClientVPN Subnet
+            l = re.split('(.*)\.(.*)\.(.*)\.(.*)', client['ip'])
+            network_add = l[1:-1]
+            if network_add[0:3] == ['192', '168', '92'] or network_add[0:3] == ['192', '168', '93']:
+                if client['status'] == 'Online':
+                    list_clients_online.append(client)
 
-    return list_clients_online
+    return len(list_clients_online)
 
 
 @app.after_response
 def main():
     while True:
-        clientvpn = get_all_network_clients_online()
-        cvpn_users = 0
-        for item in clientvpn:
-            # Check if Client Device belongs to ClientVPN Subnet
-            l = re.split('(.*)\.(.*)\.(.*)\.(.*)', item['ip'])
-            network_add = l[1:-1]
-            if network_add[0:3] == ['192', '168', '92'] or network_add[0:3] == ['192', '168', '93']:
-                cvpn_users += 1
+        cvpn_users = get_count_network_clients_online()
         print(cvpn_users)
+
         # Set client threshold to desired amount in credentials file
         if cvpn_users >= client_vpn_threshold:
             sender_email = credentials.email
@@ -112,15 +115,24 @@ def main():
             body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
             cvpn_mail.send_mail(sender_email, password, subject, body)
 
-            for x in range(2):
+            for x in range(3):
                 print('Waiting...')
                 time.sleep(600)
+                cvpn_users = get_count_network_clients_online()
 
-        time.sleep(300)
+                if cvpn_users < 350:
+                    break
+
+        time.sleep(30)
+
+
+def start_flaskapp():
+    return "Success!\n"
 
 
 @app.route('/')
 def main():
+    app.apscheduler.add_job(func=start_flaskapp, trigger='cron', id='j', minute='*')
     return "Success!\n"
 
 
