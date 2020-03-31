@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="69164ae5-b945-40e6-a6c9-a3c108bedc06" name="Default Changelist" comment="" />
+    <list default="true" id="69164ae5-b945-40e6-a6c9-a3c108bedc06" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/clientvpn.py" beforeDir="false" afterPath="$PROJECT_DIR$/clientvpn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cvpn_mail.py" beforeDir="false" afterPath="$PROJECT_DIR$/cvpn_mail.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +35,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.cvpn_mail">
+  <component name="RunManager" selected="Python.clientvpn">
     <configuration name="clientvpn" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="cvpn_alert" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -97,8 +101,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.cvpn_mail" />
         <item itemvalue="Python.clientvpn" />
+        <item itemvalue="Python.cvpn_mail" />
         <item itemvalue="Python.discovery" />
       </list>
     </recent_temporary>

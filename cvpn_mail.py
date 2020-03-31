@@ -6,8 +6,8 @@ import credentials
 rcv_email = credentials.rcv_email
 
 
-def send_mail(sender_email, password, subject, body):
-    receiver_email = rcv_email
+def send_mail(sender_email, password, subject, body, reciver_email=''):
+    receiver_email = rcv_email + reciver_email
 
     # Create a multipart message and set headers
     message = MIMEMultipart()

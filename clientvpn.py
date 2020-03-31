@@ -86,7 +86,7 @@ def get_all_network_clients_online():
         user_id = list_clients[-1]['id']
 
     for client in list_clients:
-        if client['status'] == 'Online':
+        if (client['ip'] is not None) and (client['status'] == 'Online'):
             list_clients_online.append(client)
 
     return list_clients_online
@@ -112,11 +112,11 @@ def main():
             body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
             cvpn_mail.send_mail(sender_email, password, subject, body)
 
-            for x in range(3):
+            for x in range(2):
                 print('Waiting...')
                 time.sleep(600)
 
-        time.sleep(30)
+        time.sleep(300)
 
 
 @app.route('/')
