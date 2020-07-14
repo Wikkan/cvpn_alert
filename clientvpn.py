@@ -3,7 +3,6 @@ import credentials
 import re
 import time
 import cvpn_mail
-from flask_apscheduler import APScheduler
 
 from flask import Flask
 
@@ -60,10 +59,6 @@ client_vpn_threshold = credentials.client_vpn_threshold
 app = Flask("after_response")  # create the Flask app
 AfterResponse(app)
 
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
-
 # Instantiate Meraki Python SDK Client
 dashboard = meraki.DashboardAPI(
     api_key=api_key,
@@ -78,8 +73,11 @@ def get_count_network_clients_online():
     user_id = ''
 
     while not condition:
-        clients = dashboard.clients.getNetworkClients(networkId=network_id, total_pages=1, direction='next',
-                                                      perPage=1000, startingAfter=user_id)
+        try:
+            clients = dashboard.clients.getNetworkClients(networkId=network_id, total_pages=1, direction='next',
+                                                          perPage=1000, startingAfter=user_id)
+        except Exception:
+            return False
 
         if len(clients) != 1000:
             condition = True
@@ -104,35 +102,35 @@ def get_count_network_clients_online():
 @app.after_response
 def main():
     while True:
-        cvpn_users = get_count_network_clients_online()
-        print(cvpn_users)
+        result = get_count_network_clients_online()
 
-        # Set client threshold to desired amount in credentials file
-        if cvpn_users >= client_vpn_threshold:
-            sender_email = credentials.email
-            password = credentials.password
-            subject = "WARNING TOO MANY VPN USERS!"
-            body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
-            cvpn_mail.send_mail(sender_email, password, subject, body)
+        if not result:
+            print("There was a problem getting the cvpn users")
+            time.sleep(300)
+        else:
+            cvpn_users = result
+            print(cvpn_users)
 
-            for x in range(3):
-                print('Waiting...')
-                time.sleep(600)
-                cvpn_users = get_count_network_clients_online()
+            # Set client threshold to desired amount in credentials file
+            if cvpn_users >= client_vpn_threshold:
+                sender_email = credentials.email
+                password = credentials.password
+                subject = "WARNING TOO MANY VPN USERS!"
+                body = "ALERT, TOTAL CLIENT VPN USERS IS {} ".format(cvpn_users)
+                result = cvpn_mail.send_mail(sender_email, password, subject, body)
 
-                if cvpn_users < 350:
-                    break
+                if not result:
+                    print("There was a problem sending the email")
+                    time.sleep(300)
+                else:
+                    print('Waiting...')
+                    time.sleep(1500)
 
-        time.sleep(30)
-
-
-def start_flaskapp():
-    return "Success!\n"
+            time.sleep(300)
 
 
 @app.route('/')
 def main():
-    app.apscheduler.add_job(func=start_flaskapp, trigger='cron', id='j', minute='*')
     return "Success!\n"
 
 

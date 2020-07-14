@@ -22,10 +22,14 @@ def send_mail(sender_email, password, subject, body, reciver_email=''):
     message.attach(MIMEText(body, "plain"))
     text = message.as_string()
     # Log in to server using secure context and send email
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, list_receiver_email, text)
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, list_receiver_email, text)
+        return True
+    except Exception:
+        return False
 
 
 # if __name__ == "__main__":
